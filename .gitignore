@@ -1,0 +1,6 @@
+.vscode
+db.sqlite3
+__pycache__
+Pipfile
+Pipfile.lock
+.idea
