@@ -1,4 +1,5 @@
 
+from dataclasses import fields
 from django.shortcuts import render
 
 from .serializers import *
@@ -38,28 +39,26 @@ from rest_framework.response import Response
 
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     @action(detail=True)
-    def list_manager_accounts(self, request, pk=None):
+    def my_manager_accounts(self, request, pk=None):
         user = self.get_object()
         manager_queryset = user.manager_accounts.all()
-        serializer = ManagerSerializer(manager_queryset, many=True)
+        serializer = ManagerSerializer(manager_queryset, many=True, fields=('id', 'club'))
         return Response(serializer.data)
 
 
-
+    @action(detail=True)
+    def my_applies(self, request, pk=None):
+        user = self.get_object()
+        apply_queryset = user.applies.all()
+        serializer = ApplySerializer(apply_queryset, many=True, fields=('id', 'club_id', 'club_name', 'temp_save', 'deadline'))
+        return Response(serializer.data)
 
 class ClubViewSet(viewsets.ModelViewSet):
-    """
-    <Club>
-    GET(list, detail) : AllowAny 
-    POST(create) : IsAuthenticated (only registered user) 
-    PUT(update), DELETE(delete) : IsManagerOrReadOnly (only manager)
-
-    """
 
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
@@ -67,69 +66,72 @@ class ClubViewSet(viewsets.ModelViewSet):
                         IsManagerOrReadOnly]
 
 
-    """
-    <Recruit>
-    GET(list) : AllowAny
+    def list(self, request):
+        club_queryset = Club.objects.all()
+        serializer = ClubSerializer(club_queryset, many=True, fields=('id', 'name', 'category'))
 
-    """
+        return Response(serializer.data)
 
     @action(detail=True)
-    def list_recruits(self, request, pk=None):
+    def manager_index_page(self, request, pk=None):
+        club = self.get_object()
+        recruit_inprogress = Recruit.objects.get(club=club.pk, in_progress=True)
+        total_applies = Apply.objects.filter(recruit=recruit_inprogress, temp_save=False).count()
+
+        res = {
+            'total_applies': total_applies,
+            'recruit_inprogress': recruit_inprogress.pk,
+        }
+
+        return Response(res)
+
+
+    # 코드를 어떻게 리팩토링 하지?
+
+    
+    @action(detail=True)
+    def recruits(self, request, pk=None):
         club = self.get_object()
         recruit_queryset = club.recruits.all()
-        serializer = RecruitSerializer(recruit_queryset, many=True)
+        serializer = RecruitSerializer(recruit_queryset, many=True, fields=('id', 'title', 'uploaded'))
         return Response(serializer.data)
 
 
-
     @action(detail=True)
-    def list_managers(self, request, pk=None):
+    def managers(self, request, pk=None):
         club = self.get_object()
         manager_queryset = club.managers.all()
-        serializer = ManagerSerializer(manager_queryset, many=True)
+        serializer = ManagerSerializer(manager_queryset, many=True, fields=('id', 'user', 'super'))
         return Response(serializer.data)
 
 
     @action(detail=True)
-    def list_notices(self, request, pk=None):
+    def notices(self, request, pk=None):
         club = self.get_object()
         notice_queryset = club.notices.all()
         serializer = NoticeSerializer(notice_queryset, many=True)
-        return Response(serializer.data)
-
+        return Response(serializer.data) 
 
 class RecruitViewSet(viewsets.ModelViewSet):
-
-    """
-    <Recruit>
-    GET(list, detail) : AllowAny
-    POST(create), PUT(update), DELETE(delete) : only Manager
-
-    """
 
     queryset = Recruit.objects.all()
     serializer_class = RecruitSerializer
 
     #permission_classes = [IsManagerOrReadOnly]
+    # 운영진만 list_applies, get_apply_count GET 가능
 
-    """
-    <Apply>
-    GET(list) : only Manager
-
-    """
-
-    @action(detail=True)
-    def list_applies(self, request, pk=None):
-        recruit = self.get_object()
-        apply_queryset = recruit.appliers.all()
-        serializer = ApplySerializer(apply_queryset, many=True)
+    def list(self, request):
+        recruit_queryset = Recruit.objects.all()
+        serializer = RecruitSerializer(recruit_queryset, many=True, fields=('id', 'club', 'title', 'deadline', 'uploaded'))
+        
         return Response(serializer.data)
-
-
-    def get_apply_count(self, request, pk=None):
+    
+    @action(detail=True)
+    def applies(self, request, pk=None):
         recruit = self.get_object()
-        apply_count = recruit.appliers.all.count()
-        return apply_count
+        apply_queryset = recruit.appliers.filter(temp_save=False)
+        serializer = ApplySerializer(apply_queryset, many=True, fields=('id', 'applier', 'submit_at', 'curr_step'))
+        return Response(serializer.data)
 
 
 class ManagerViewSet(viewsets.ModelViewSet):
@@ -137,38 +139,30 @@ class ManagerViewSet(viewsets.ModelViewSet):
     serializer_class = ManagerSerializer
 
 
-
 class ApplyViewSet(viewsets.ModelViewSet):
 
-    """
-    <Apply>
-    GET(detail) : temp_save=True - only applier / temp_save=False(최종 제출) - manager and applier
-    POST(create) : IsAuthenticated (only registered user)
-    PUT(update), DELETE(delete) : only applier with temp_save=True
-
-    임시 저장이 아닌 최종 제출한 Apply instance 에 대해선 GET(detail, list) 만 가능하다
-
-    """
     queryset = Apply.objects.all()
     serializer_class = ApplySerializer
 
-
-
+    # 운영진만 list_comment GET 가능
     @action(detail=True)
-    def list_comments(self, request, pk=None):
+    def comments(self, request, pk=None):
         apply = self.get_object()
         comment_queryset = apply.comments.all()
         serializer = CommentSerializer(comment_queryset, many=True)
         return Response(serializer.data)
 
 
-
+# 운영진만 POST, GET 가능
+# 특정 comment에 대해 작성자만 PUT, DELETE 가능
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
 
-
+# view_range 에 따라 GET 범위 변화
+# 운영진만 POST, DELETE 가능
+# PUT 불가능
 class NoticeViewSet(viewsets.ModelViewSet):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
@@ -182,3 +176,7 @@ class TimeTableViewSet(viewsets.ModelViewSet):
 class SelectTimeViewSet(viewsets.ModelViewSet):
     queryset = SelectTime.objects.all()
     serializer_class = SelectTimeSerializer
+
+
+class ApplyFormViewSet(viewsets.ModelViewSet):
+    pass

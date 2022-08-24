@@ -1,7 +1,7 @@
 
 from distutils.command.upload import upload
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager
 
 # Create your models here.
 """
@@ -64,10 +64,7 @@ class ServiceUser(AbstractBaseUser):
 
     def __str__(self):
         return self.id
-
-
 """
-
 
 
 class Club(models.Model): 
@@ -86,6 +83,7 @@ class Recruit(models.Model):
     uploaded = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField()
     total_step = models.IntegerField()
+    in_progress = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
