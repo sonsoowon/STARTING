@@ -9,12 +9,13 @@
 ![image](https://user-images.githubusercontent.com/55790232/195987149-6f3b248e-0dae-4feb-b3e0-8f1d695265fc.png)
 ![image](https://user-images.githubusercontent.com/55790232/195987174-19f77ce6-1235-4777-80ef-ddc14eacc967.png)
 
-
+<br/>
 
 ### Database Schema
-![image](https://user-images.githubusercontent.com/55790232/195987204-cd7b1e76-ce10-47af-ab25-f696ca22cb80.png)
+![Database ER diagram (crow's foot) (3) (2)](https://user-images.githubusercontent.com/55790232/195987245-2900b88d-9fcd-4c5a-a42d-fc6b844a744d.png)
 
+<br/>
 
-#### [API Document](https://docs.google.com/document/d/1n_HmDBRhGs19vrRT9qD4B9SArwKVURJMOoQZvOVJTwY/edit?usp=sharing)
+### [API Document](https://docs.google.com/document/d/1n_HmDBRhGs19vrRT9qD4B9SArwKVURJMOoQZvOVJTwY/edit?usp=sharing)
 
 기능과 구현 방향은 회의를 통해 계속 수정하는 중입니다.
