@@ -3,13 +3,16 @@
 
 
 ### Template Design
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/2b84ac63-0514-4e34-a472-f22b50732e53/Untitled.png)
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/13f00860-b7c0-43fa-874b-9e317fea4c61/Untitled.png)
+
+![image](https://user-images.githubusercontent.com/55790232/195987191-07a437fc-6074-447d-badd-82d7ffbdfb2f.png)
 ![image](https://user-images.githubusercontent.com/55790232/195987004-10bac507-bd0d-4e0e-8508-b705b44aa371.png)
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f89ab4f9-a43c-4b8f-9a2e-97491c8e7545/Untitled.png)
+![image](https://user-images.githubusercontent.com/55790232/195987149-6f3b248e-0dae-4feb-b3e0-8f1d695265fc.png)
+![image](https://user-images.githubusercontent.com/55790232/195987174-19f77ce6-1235-4777-80ef-ddc14eacc967.png)
+
+
 
 ### Database Schema
-![Database ER diagram (crow's foot) (3).png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ad158fa3-eab1-4795-a187-e3e96eca5a5b/Database_ER_diagram_(crows_foot)_(3).png)
+![image](https://user-images.githubusercontent.com/55790232/195987204-cd7b1e76-ce10-47af-ab25-f696ca22cb80.png)
 
 
 #### [API Document](https://docs.google.com/document/d/1n_HmDBRhGs19vrRT9qD4B9SArwKVURJMOoQZvOVJTwY/edit?usp=sharing)
